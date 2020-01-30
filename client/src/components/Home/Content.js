@@ -1,25 +1,17 @@
-import React, { useGlobal, useEffect } from "reactn";
-import axios from "axios";
+import React, { useContext } from "react";
 import Tweet from "./Tweet";
+import { Context } from "../../Context";
 
 const Content = props => {
-  const [values, setValues] = useGlobal();
-  const { tweets } = values;
-
-  useEffect(() => {
-    axios
-      .get("/tweets")
-      .then(res => res.data)
-      .then(data => {
-        setValues(v => ({
-          tweets: data
-        }));
-        console.log(values);
-      });
-  }, []);
+  const { tweets } = useContext(Context);
 
   if (!tweets[0]) {
-    return <center>Loading...</center>;
+    return (
+      <div className="text-center mt-5">
+        <i className="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <span className="sr-only">Loading...</span>
+      </div>
+    );
   } else {
     return (
       <>

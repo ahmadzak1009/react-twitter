@@ -6,13 +6,13 @@ const jwt = require("jsonwebtoken");
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
-    if (!user) return res.send("username not found");
+    if (!user) return res.status(200).send("username not found");
 
     const cekPassword = await bcrypt.compare(req.body.password, user.password);
     if (!cekPassword) return res.send("password incorrect");
 
     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: "5h" });
-    res.header("Authorization", `Bearer ${token}`).json({ token });
+    res.header("Authorization", `Bearer ${token}`).json({ id: user._id, token });
   } catch (err) {
     res.status(400).send(err);
   }

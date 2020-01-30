@@ -3,7 +3,7 @@ const Tweet = require("../models/Tweet");
 
 router.get("/", async (req, res) => {
   try {
-    const tweet = await Tweet.find();
+    const tweet = await Tweet.find().sort("-createdAt");
     res.json(tweet);
   } catch (err) {
     res.status(400).send(err);
@@ -27,13 +27,15 @@ router.put("/like", async (req, res) => {
 
   try {
     const tweet = await Tweet.findById(idTweet);
-    const response = await Tweet.findOneAndUpdate(
-      { _id: idTweet },
-      {
-        likes: [...tweet.likes, id.body.idUser]
-      }
-    );
-    res.send(`User with id ${idUser} like tweet with id ${idTweet}`);
+    let likes = [];
+    if (tweet.likes.find(like => like === idUser)) {
+      likes = tweet.likes.filter(like => like !== idUser);
+    } else {
+      likes = [...tweet.likes, idUser];
+    }
+    const response = await Tweet.findOneAndUpdate({ _id: idTweet }, { likes });
+    const updatedTweets = await Tweet.find().sort("-createdAt");
+    res.json(updatedTweets);
   } catch (err) {
     res.status(400).send(err);
   }
@@ -42,6 +44,7 @@ router.put("/like", async (req, res) => {
 router.put("/comment", async (req, res) => {
   const idTweet = req.body.idTweet;
   const idUser = req.body.idUser;
+  const username = req.body.username;
   const comment = req.body.comment;
 
   try {
@@ -49,10 +52,11 @@ router.put("/comment", async (req, res) => {
     const response = await Tweet.findOneAndUpdate(
       { _id: idTweet },
       {
-        comments: [...tweet.comments, { idUser, comment }]
+        comments: [...tweet.comments, { idUser, username, comment }]
       }
     );
-    res.send(`User ${idUser} commented on tweet with id ${idTweet}`);
+    const updatedTweets = await Tweet.find().sort("-createdAt");
+    res.json(updatedTweets);
   } catch (err) {
     res.status(400).send(err);
   }

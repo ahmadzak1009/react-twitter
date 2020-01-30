@@ -1,15 +1,19 @@
-import React, { setGlobal } from "reactn";
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Home from "./components/Home/Home";
-
-setGlobal({
-  tweets: [],
-  user: null
-});
+import Login from "./components/Login/Login";
+import SignUp from "./components/SignUp/SignUp";
 
 function App() {
   return (
     <>
-      <Home />
+      <Router>
+        <Switch>
+          <Route path="/" component={Home} exact />
+          <Route path="/login" component={Login} />
+          <Route path="/sign-up" component={SignUp} />
+        </Switch>
+      </Router>
     </>
   );
 }
